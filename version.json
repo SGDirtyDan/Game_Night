@@ -1,11 +1,11 @@
 {
-  "version": "0.3.15",
+  "version": "0.3.16",
   "channel": "local",
   "packageDate": "2026-08-20",
   "updateFeedUrl": "https://raw.githubusercontent.com/SGDirtyDan/Game_Night/main/update.json",
   "releaseNotes": [
-    "Add visible update download progress.",
-    "Use a longer timeout for release zip downloads.",
-    "Show update download and install errors in the About tab instead of failing silently."
+    "Placebo update to verify the improved update downloader.",
+    "No gameplay, controller, NetPlay, graphics, or library behavior changed.",
+    "Confirms that version 0.3.15 shows progress, verifies the zip, installs, and relaunches."
   ]
 }
