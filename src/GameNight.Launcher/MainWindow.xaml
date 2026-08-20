@@ -898,6 +898,11 @@
                               Command="{Binding OpenUpdatePackageCommand}"
                               Padding="14,8"
                               Margin="0,0,10,0" />
+                      <Button DockPanel.Dock="Left"
+                              Content="Install Update"
+                              Command="{Binding InstallUpdateCommand}"
+                              Padding="14,8"
+                              Margin="0,0,10,0" />
                       <TextBlock Text="{Binding UpdateCheckStatus}"
                                  Foreground="#c9ced8"
                                  FontSize="13"

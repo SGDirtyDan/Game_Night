@@ -40,6 +40,7 @@ Copy-Item -LiteralPath (Join-Path $root "shared") -Destination (Join-Path $packa
 Copy-Item -LiteralPath (Join-Path $root "docs") -Destination (Join-Path $packageRoot "docs") -Recurse -Force
 Copy-Item -LiteralPath (Join-Path $root "version.json") -Destination (Join-Path $packageRoot "version.json") -Force
 Copy-Item -LiteralPath (Join-Path $root "scripts/Get-GameHash.ps1") -Destination (Join-Path $packageRoot "Get-GameHash.ps1") -Force
+Copy-Item -LiteralPath (Join-Path $root "scripts/Update-GameNight.ps1") -Destination (Join-Path $packageRoot "Update-GameNight.ps1") -Force
 
 if (Test-Path -LiteralPath (Join-Path $root "update.example.json")) {
     Copy-Item -LiteralPath (Join-Path $root "update.example.json") -Destination (Join-Path $packageRoot "update.example.json") -Force

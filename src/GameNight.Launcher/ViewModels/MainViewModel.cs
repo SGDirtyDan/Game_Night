@@ -41,6 +41,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string _updatePackageUrl = "";
     private string _updateReleaseNotesText = "No remote update has been checked yet.";
     private bool _isUpdateAvailable;
+    private UpdateFeedInfo? _latestUpdateFeed;
 
     public MainViewModel()
     {
@@ -69,6 +70,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         CaptureControllerButtonCommand = new AsyncParameterCommand(CaptureControllerButtonAsync, parameter => !string.IsNullOrWhiteSpace(SelectedControllerName) && parameter is string);
         CheckForUpdatesCommand = new AsyncCommand(CheckForUpdatesAsync);
         OpenUpdatePackageCommand = new RelayCommand(OpenUpdatePackage, () => HasUpdatePackageUrl);
+        InstallUpdateCommand = new AsyncCommand(InstallUpdateAsync, () => CanInstallUpdate);
         StartAutoRefreshWatchers();
         _ = RefreshAsync();
     }
@@ -134,8 +136,20 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public bool IsUpdateAvailable
     {
         get => _isUpdateAvailable;
-        private set => SetField(ref _isUpdateAvailable, value);
+        private set
+        {
+            if (SetField(ref _isUpdateAvailable, value))
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanInstallUpdate)));
+                if (InstallUpdateCommand is AsyncCommand command)
+                {
+                    command.RaiseCanExecuteChanged();
+                }
+            }
+        }
     }
+
+    public bool CanInstallUpdate => IsUpdateAvailable && _latestUpdateFeed is not null;
 
     public AppVersionInfo VersionInfo
     {
@@ -353,6 +367,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand CheckForUpdatesCommand { get; }
 
     public ICommand OpenUpdatePackageCommand { get; }
+
+    public ICommand InstallUpdateCommand { get; }
 
     private async Task RefreshAsync()
     {
@@ -623,6 +639,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         UpdatePackageUrl = "";
         UpdateReleaseNotesText = "Checking remote release notes...";
         IsUpdateAvailable = false;
+        _latestUpdateFeed = null;
 
         var result = await _service.CheckForUpdatesAsync(VersionInfo);
         UpdateCheckStatus = result.Message;
@@ -637,12 +654,42 @@ public sealed class MainViewModel : INotifyPropertyChanged
         LatestVersion = result.Feed.LatestVersion;
         UpdatePackageUrl = result.Feed.PackageUrl;
         UpdateReleaseNotesText = result.Feed.ReleaseNotesText;
+        _latestUpdateFeed = result.Feed;
         IsUpdateAvailable = result.IsUpdateAvailable;
     }
 
     private void OpenUpdatePackage()
     {
         GameNightService.OpenExternalUrl(UpdatePackageUrl);
+    }
+
+    private async Task InstallUpdateAsync()
+    {
+        if (_latestUpdateFeed is null)
+        {
+            UpdateCheckStatus = "Check for updates before installing.";
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            "Game Night will download the update, verify it, close this window, replace app files, preserve your local games/settings, and relaunch. Continue?",
+            "Install Game Night Update",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (confirm != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        UpdateCheckStatus = "Downloading update...";
+        var result = await _service.DownloadAndInstallUpdateAsync(_latestUpdateFeed);
+        UpdateCheckStatus = result.Message;
+
+        if (result.Success)
+        {
+            Application.Current.Shutdown();
+        }
     }
 
     private async Task CaptureControllerButtonAsync(object? parameter)

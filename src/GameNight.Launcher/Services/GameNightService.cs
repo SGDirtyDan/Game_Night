@@ -153,6 +153,75 @@ public sealed class GameNightService
         }
     }
 
+    public async Task<UpdateInstallResult> DownloadAndInstallUpdateAsync(UpdateFeedInfo feed)
+    {
+        if (string.IsNullOrWhiteSpace(feed.PackageUrl))
+        {
+            return new UpdateInstallResult(false, "The update feed does not include a package URL.");
+        }
+
+        if (string.IsNullOrWhiteSpace(feed.Sha256))
+        {
+            return new UpdateInstallResult(false, "The update feed does not include a SHA-256 hash.");
+        }
+
+        var updaterPath = Path.Combine(ProjectRoot, "Update-GameNight.ps1");
+        if (!File.Exists(updaterPath))
+        {
+            return new UpdateInstallResult(false, "Missing updater script: Update-GameNight.ps1");
+        }
+
+        var updatesDirectory = Path.Combine(ProjectRoot, ".updates");
+        Directory.CreateDirectory(updatesDirectory);
+
+        var zipFileName = Path.GetFileName(new Uri(feed.PackageUrl).AbsolutePath);
+        if (string.IsNullOrWhiteSpace(zipFileName))
+        {
+            zipFileName = $"GameNight-{feed.LatestVersion}.zip";
+        }
+
+        var zipPath = Path.Combine(updatesDirectory, zipFileName);
+        using (var response = await ArtworkHttpClient.GetAsync(feed.PackageUrl))
+        {
+            response.EnsureSuccessStatusCode();
+            await using var source = await response.Content.ReadAsStreamAsync();
+            await using var target = File.Create(zipPath);
+            await source.CopyToAsync(target);
+        }
+
+        var actualHash = await ComputeSha256Async(zipPath);
+        if (!string.Equals(actualHash, feed.Sha256, StringComparison.OrdinalIgnoreCase))
+        {
+            File.Delete(zipPath);
+            return new UpdateInstallResult(
+                false,
+                $"Downloaded update hash did not match. Expected {feed.Sha256}, found {actualHash}.");
+        }
+
+        var relaunchPath = Path.Combine(ProjectRoot, "app", "GameNight.exe");
+        var processId = Environment.ProcessId;
+        var arguments = string.Join(
+            " ",
+            "-NoProfile",
+            "-ExecutionPolicy Bypass",
+            "-File " + QuotePowerShellArgument(updaterPath),
+            "-PackageRoot " + QuotePowerShellArgument(ProjectRoot),
+            "-ZipPath " + QuotePowerShellArgument(zipPath),
+            "-AppProcessId " + processId,
+            "-RelaunchPath " + QuotePowerShellArgument(relaunchPath));
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "powershell.exe",
+            Arguments = arguments,
+            UseShellExecute = false,
+            CreateNoWindow = false,
+            WorkingDirectory = ProjectRoot
+        });
+
+        return new UpdateInstallResult(true, $"Downloaded and verified {feed.LatestVersion}. Game Night will close while the updater replaces files.");
+    }
+
     public static void OpenExternalUrl(string url)
     {
         if (string.IsNullOrWhiteSpace(url))
@@ -979,6 +1048,11 @@ public sealed class GameNightService
         return Version.TryParse(string.Join(".", parts), out version!);
     }
 
+    private static string QuotePowerShellArgument(string value)
+    {
+        return "\"" + value.Replace("\"", "\\\"") + "\"";
+    }
+
     private static int? ParseDolphinInteger(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -1652,6 +1726,8 @@ public sealed record ControllerProfileResult(bool Success, string Message);
 public sealed record InputCaptureResult(bool Success, string Message, string? Binding);
 
 public sealed record UpdateCheckResult(bool IsUpdateAvailable, string Message, UpdateFeedInfo? Feed);
+
+public sealed record UpdateInstallResult(bool Success, string Message);
 
 internal sealed record DiscoveredGameType(string Emulator, string System);
 
