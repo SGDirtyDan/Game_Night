@@ -1,11 +1,11 @@
 ﻿{
-    "latestVersion":  "0.3.11",
+    "latestVersion":  "0.3.12",
     "channel":  "friend",
-    "packageUrl":  "https://github.com/SGDirtyDan/Game_Night/releases/download/v0.3.11/GameNight-Friend-0.3.11.zip",
-    "sha256":  "0CF788DF3D1E36F075B7E33D8B568A4285FC6C398B1D79A5C27A8351493F16F6",
+    "packageUrl":  "https://github.com/SGDirtyDan/Game_Night/releases/download/v0.3.12/GameNight-Friend-0.3.12.zip",
+    "sha256":  "A64EB237F661C70098E83630F3A60A863BB617E5DD669D41015670E74287FAAF",
     "releaseNotes":  [
-                         "Add in-app update installation with SHA-256 verification.",
-                         "Preserve local games, controller profile, and Dolphin user data during updates.",
-                         "Relaunch Game Night after the external updater replaces package files."
+                         "Placebo update to verify the new in-app installer flow.",
+                         "No gameplay, controller, NetPlay, graphics, or library behavior changed.",
+                         "Confirms that version 0.3.11 can install an update and relaunch Game Night."
                      ]
 }

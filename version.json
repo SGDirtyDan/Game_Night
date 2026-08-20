@@ -1,11 +1,11 @@
 {
-  "version": "0.3.11",
+  "version": "0.3.12",
   "channel": "local",
   "packageDate": "2026-08-20",
   "updateFeedUrl": "https://raw.githubusercontent.com/SGDirtyDan/Game_Night/main/update.json",
   "releaseNotes": [
-    "Add in-app update installation with SHA-256 verification.",
-    "Preserve local games, controller profile, and Dolphin user data during updates.",
-    "Relaunch Game Night after the external updater replaces package files."
+    "Placebo update to verify the new in-app installer flow.",
+    "No gameplay, controller, NetPlay, graphics, or library behavior changed.",
+    "Confirms that version 0.3.11 can install an update and relaunch Game Night."
   ]
 }
