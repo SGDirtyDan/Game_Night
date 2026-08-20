@@ -2,9 +2,9 @@ param(
     [ValidateSet("Friend", "Host")]
     [string] $PackageMode = "Friend",
 
-    [string] $GitHubOwner = "YOUR-GITHUB-USER",
+    [string] $GitHubOwner = "SGDirtyDan",
 
-    [string] $GitHubRepository = "YOUR-REPO",
+    [string] $GitHubRepository = "Game_Night",
 
     [string] $Tag = ""
 )
@@ -46,6 +46,7 @@ Compress-Archive -LiteralPath $packageRoot -DestinationPath $zipPath -Force
 $hash = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash
 $packageUrl = "https://github.com/$GitHubOwner/$GitHubRepository/releases/download/$Tag/$zipName"
 $feedPath = Join-Path $releaseRoot "update.json"
+$repositoryFeedPath = Join-Path $root "update.json"
 
 $feed = [ordered]@{
     latestVersion = $version
@@ -55,13 +56,17 @@ $feed = [ordered]@{
     releaseNotes = @($versionInfo.releaseNotes)
 }
 
-$feed | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $feedPath -Encoding UTF8
+$feedJson = $feed | ConvertTo-Json -Depth 4
+$feedJson | Set-Content -LiteralPath $feedPath -Encoding UTF8
+$feedJson | Set-Content -LiteralPath $repositoryFeedPath -Encoding UTF8
 
 Write-Host ""
 Write-Host "Prepared Game Night release:"
 Write-Host "Package: $zipPath"
 Write-Host "SHA-256: $hash"
 Write-Host "Feed:    $feedPath"
+Write-Host "Repo feed:"
+Write-Host $repositoryFeedPath
 Write-Host ""
 Write-Host "GitHub release tag:"
 Write-Host $Tag

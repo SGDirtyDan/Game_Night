@@ -2,7 +2,7 @@
   "version": "0.3.9",
   "channel": "local",
   "packageDate": "2026-08-20",
-  "updateFeedUrl": "",
+  "updateFeedUrl": "https://raw.githubusercontent.com/SGDirtyDan/Game_Night/main/update.json",
   "releaseNotes": [
     "Add a manual remote update checker in Settings > About.",
     "Support a hosted update.json feed for future GitHub-based releases.",

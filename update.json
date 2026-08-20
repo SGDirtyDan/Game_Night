@@ -1,0 +1,11 @@
+﻿{
+    "latestVersion":  "0.3.9",
+    "channel":  "friend",
+    "packageUrl":  "https://github.com/SGDirtyDan/Game_Night/releases/download/v0.3.9/GameNight-Friend-0.3.9.zip",
+    "sha256":  "E4A9A59A59A1378BF833D619A82006DDDBB9285E475FCC54F180419A610FE074",
+    "releaseNotes":  [
+                         "Add a manual remote update checker in Settings \u003e About.",
+                         "Support a hosted update.json feed for future GitHub-based releases.",
+                         "Show latest version, download URL, and remote release notes without replacing files automatically."
+                     ]
+}

@@ -25,13 +25,34 @@ Use `update.example.json` as the template:
 1. Prepare the release locally:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts\New-GameNightRelease.ps1 -PackageMode Friend -GitHubOwner YOUR-GITHUB-USER -GitHubRepository YOUR-REPO
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\New-GameNightRelease.ps1 -PackageMode Friend
 ```
 
-2. Create a GitHub release tagged `vx.y.z`.
-3. Upload `dist/releases/GameNight-Friend-x.y.z.zip` to the release.
-4. Host `dist/releases/update.json` somewhere stable. A GitHub repo file with a raw URL is fine for the first pass.
-5. Set `updateFeedUrl` in packaged `version.json` to the raw hosted feed URL.
-6. Publish another package so testers receive the configured feed URL.
+2. Install and authenticate GitHub CLI:
+
+```powershell
+winget install GitHub.cli
+gh auth login
+```
+
+3. Publish the release:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\Publish-GitHubRelease.ps1 -PackageMode Friend
+```
+
+4. Commit and push the updated feed:
+
+```powershell
+git add version.json update.json docs scripts update.example.json
+git commit -m "Prepare Game Night release feed"
+git push
+```
+
+The current feed URL is:
+
+```text
+https://raw.githubusercontent.com/SGDirtyDan/Game_Night/main/update.json
+```
 
 This first updater phase does not replace files automatically. Players use the shown download link and update manually, which keeps their local `games`, controller profile, NetPlay settings, and Dolphin user data out of the blast radius.
