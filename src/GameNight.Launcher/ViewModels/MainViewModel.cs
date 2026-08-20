@@ -41,6 +41,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string _latestVersion = "Unknown";
     private string _updatePackageUrl = "";
     private string _updateReleaseNotesText = "No remote update has been checked yet.";
+    private string _lastUpdateLog = "No updater log has been loaded yet.";
     private bool _isUpdateAvailable;
     private UpdateFeedInfo? _latestUpdateFeed;
 
@@ -72,6 +73,10 @@ public sealed class MainViewModel : INotifyPropertyChanged
         CheckForUpdatesCommand = new AsyncCommand(CheckForUpdatesAsync);
         OpenUpdatePackageCommand = new RelayCommand(OpenUpdatePackage, () => HasUpdatePackageUrl);
         InstallUpdateCommand = new AsyncCommand(InstallUpdateAsync, () => CanInstallUpdate);
+        RefreshUpdateLogCommand = new RelayCommand(RefreshUpdateLog);
+        CopyUpdateLogCommand = new RelayCommand(CopyUpdateLog);
+        OpenUpdateLogFolderCommand = new RelayCommand(OpenUpdateLogFolder);
+        ClearDownloadedUpdatesCommand = new RelayCommand(ClearDownloadedUpdates);
         StartAutoRefreshWatchers();
         _ = RefreshAsync();
     }
@@ -133,6 +138,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
         get => _updateReleaseNotesText;
         private set => SetField(ref _updateReleaseNotesText, value);
     }
+
+    public string LastUpdateLog
+    {
+        get => _lastUpdateLog;
+        private set => SetField(ref _lastUpdateLog, value);
+    }
+
+    public string UpdateLogPath => _service.GetUpdateLogPath();
 
     public bool IsUpdateAvailable
     {
@@ -371,6 +384,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public ICommand InstallUpdateCommand { get; }
 
+    public ICommand RefreshUpdateLogCommand { get; }
+
+    public ICommand CopyUpdateLogCommand { get; }
+
+    public ICommand OpenUpdateLogFolderCommand { get; }
+
+    public ICommand ClearDownloadedUpdatesCommand { get; }
+
     private async Task RefreshAsync()
     {
         if (_isRefreshing)
@@ -388,6 +409,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             SetReadiness("Checking", "Reading config/games.json...", SummaryState.Neutral);
             CanPlay = false;
             VersionInfo = await _service.LoadVersionInfoAsync();
+            RefreshUpdateLog();
             _manifest = await _service.LoadManifestAsync();
             var importedArtwork = await _service.ImportMissingArtworkAsync(_manifest);
             LoadGlobalSettings();
@@ -662,6 +684,30 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private void OpenUpdatePackage()
     {
         GameNightService.OpenExternalUrl(UpdatePackageUrl);
+    }
+
+    private void RefreshUpdateLog()
+    {
+        LastUpdateLog = _service.ReadLastUpdateLog();
+    }
+
+    private void CopyUpdateLog()
+    {
+        Clipboard.SetText(LastUpdateLog);
+        UpdateCheckStatus = "Copied update log to clipboard.";
+    }
+
+    private void OpenUpdateLogFolder()
+    {
+        _service.OpenUpdateLogFolder();
+    }
+
+    private void ClearDownloadedUpdates()
+    {
+        var deleted = _service.ClearDownloadedUpdates();
+        UpdateCheckStatus = deleted == 0
+            ? "No downloaded update zips to clear."
+            : $"Cleared {deleted} downloaded update zip{(deleted == 1 ? "" : "s")}.";
     }
 
     private async Task InstallUpdateAsync()

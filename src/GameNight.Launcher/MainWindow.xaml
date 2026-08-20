@@ -954,6 +954,53 @@
                                  Foreground="#c9ced8"
                                  TextWrapping="Wrap" />
                     </Border>
+
+                    <TextBlock Text="Update Diagnostics"
+                               Foreground="#f7f2e8"
+                               FontWeight="SemiBold"
+                               Margin="0,18,0,8" />
+                    <DockPanel Margin="0,0,0,10">
+                      <Button DockPanel.Dock="Left"
+                              Content="Refresh Log"
+                              Command="{Binding RefreshUpdateLogCommand}"
+                              Padding="14,8"
+                              Margin="0,0,10,0" />
+                      <Button DockPanel.Dock="Left"
+                              Content="Copy Log"
+                              Command="{Binding CopyUpdateLogCommand}"
+                              Padding="14,8"
+                              Margin="0,0,10,0" />
+                      <Button DockPanel.Dock="Left"
+                              Content="Open Log Folder"
+                              Command="{Binding OpenUpdateLogFolderCommand}"
+                              Padding="14,8"
+                              Margin="0,0,10,0" />
+                      <Button DockPanel.Dock="Left"
+                              Content="Clear Downloads"
+                              Command="{Binding ClearDownloadedUpdatesCommand}"
+                              Padding="14,8"
+                              Margin="0,0,10,0" />
+                    </DockPanel>
+                    <TextBlock Text="{Binding UpdateLogPath}"
+                               Foreground="#9297a1"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,8" />
+                    <Border BorderBrush="#303642"
+                            BorderThickness="1"
+                            Background="#0d1016"
+                            CornerRadius="6"
+                            Padding="12"
+                            MaxHeight="220">
+                      <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                    HorizontalScrollBarVisibility="Auto">
+                        <TextBlock Text="{Binding LastUpdateLog}"
+                                   Foreground="#c9ced8"
+                                   FontFamily="Consolas"
+                                   FontSize="12"
+                                   TextWrapping="NoWrap" />
+                      </ScrollViewer>
+                    </Border>
                   </StackPanel>
                 </Border>
               </TabItem>

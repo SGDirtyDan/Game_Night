@@ -289,6 +289,56 @@ public sealed class GameNightService
         });
     }
 
+    public string GetUpdateLogPath()
+    {
+        return Path.Combine(GetUpdateLogDirectory(), "last-update.log");
+    }
+
+    public string GetUpdateLogDirectory()
+    {
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "GameNight",
+            "Logs");
+    }
+
+    public string ReadLastUpdateLog()
+    {
+        var logPath = GetUpdateLogPath();
+        return File.Exists(logPath)
+            ? File.ReadAllText(logPath)
+            : "No updater log has been written yet.";
+    }
+
+    public void OpenUpdateLogFolder()
+    {
+        var logDirectory = GetUpdateLogDirectory();
+        Directory.CreateDirectory(logDirectory);
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = logDirectory,
+            UseShellExecute = true
+        });
+    }
+
+    public int ClearDownloadedUpdates()
+    {
+        var updatesDirectory = Path.Combine(ProjectRoot, ".updates");
+        if (!Directory.Exists(updatesDirectory))
+        {
+            return 0;
+        }
+
+        var deleted = 0;
+        foreach (var file in Directory.EnumerateFiles(updatesDirectory, "*.zip", SearchOption.TopDirectoryOnly))
+        {
+            File.Delete(file);
+            deleted++;
+        }
+
+        return deleted;
+    }
+
     private void AddDiscoveredGames(GameManifest manifest)
     {
         var gamesDirectory = Path.Combine(ProjectRoot, "games");
