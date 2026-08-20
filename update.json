@@ -2,7 +2,7 @@
     "latestVersion":  "0.3.16",
     "channel":  "friend",
     "packageUrl":  "https://github.com/SGDirtyDan/Game_Night/releases/download/v0.3.16/GameNight-Friend-0.3.16.zip",
-    "sha256":  "AB64F646586AFC0364AACF909084930575082C1B466F7BEF6E6A6A2F9E9CEE8E",
+    "sha256":  "8F640732A9F78F30404824DDCE9F43973B84581695191F96C17D0F9164521FD2",
     "releaseNotes":  [
                          "Placebo update to verify the improved update downloader.",
                          "No gameplay, controller, NetPlay, graphics, or library behavior changed.",
