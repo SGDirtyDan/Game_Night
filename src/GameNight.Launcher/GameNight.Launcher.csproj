@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AssemblyName>GameNight</AssemblyName>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Assets\game-night.ico</ApplicationIcon>
+    <AssemblyTitle>Game Night</AssemblyTitle>
+    <Product>Game Night</Product>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpDX.DirectInput" Version="4.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\gamecube-controller.png" />
+    <Resource Include="Assets\game-night-gn-logo.png" />
+    <Resource Include="Assets\game-night-icon.png" />
+    <Resource Include="Assets\game-night-wordmark.png" />
+    <Resource Include="Assets\platform-gamecube.png" />
+    <Resource Include="Assets\artwork\banners\*.png" />
+    <Resource Include="Assets\artwork\covers\*.png" />
+    <Resource Include="Assets\game-night.ico" />
+  </ItemGroup>
+</Project>

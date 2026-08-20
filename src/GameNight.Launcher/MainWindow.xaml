@@ -1,0 +1,967 @@
+<Window x:Class="GameNight.Launcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Game Night"
+        Width="1280"
+        Height="800"
+        MinWidth="960"
+        MinHeight="640"
+        Icon="pack://application:,,,/Assets/game-night-icon.png"
+        Background="#090d14"
+        WindowStartupLocation="CenterScreen">
+  <Window.Resources>
+    <SolidColorBrush x:Key="AppPanelBrush" Color="#111722" />
+    <SolidColorBrush x:Key="AppPanelAltBrush" Color="#151d2b" />
+    <SolidColorBrush x:Key="AppBorderBrush" Color="#263348" />
+    <SolidColorBrush x:Key="AppTextBrush" Color="#f5f8ff" />
+    <SolidColorBrush x:Key="AppMutedBrush" Color="#93a0b8" />
+    <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
+      <GradientStop Color="#17d7ff" Offset="0" />
+      <GradientStop Color="#9e42ff" Offset="1" />
+    </LinearGradientBrush>
+    <Style x:Key="RoundedButton" TargetType="Button">
+      <Setter Property="Background" Value="#1a2434" />
+      <Setter Property="Foreground" Value="#f5f8ff" />
+      <Setter Property="BorderBrush" Value="#32435e" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Padding" Value="16,9" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="ButtonBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="9"
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RecognizesAccessKey="True" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="ButtonBorder" Property="Background" Value="#22314a" />
+                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#18c8f8" />
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="ButtonBorder" Property="Background" Value="#121a29" />
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.48" />
+                <Setter Property="Cursor" Value="Arrow" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="Button" BasedOn="{StaticResource RoundedButton}" />
+    <Style x:Key="StatusPill" TargetType="Border">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="9,5" />
+      <Setter Property="Margin" Value="0,0,8,0" />
+      <Setter Property="Background" Value="#243326" />
+    </Style>
+    <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+      <Setter Property="Background" Value="#18c8f8" />
+      <Setter Property="Foreground" Value="#07111a" />
+      <Setter Property="BorderBrush" Value="#18c8f8" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Padding" Value="20,11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style x:Key="HeaderButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+      <Setter Property="Padding" Value="13,6" />
+      <Setter Property="MinWidth" Value="76" />
+      <Setter Property="MinHeight" Value="34" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Background" Value="#151f2f" />
+      <Setter Property="BorderBrush" Value="#2a3a54" />
+    </Style>
+    <Style x:Key="MappingCaptureButton" TargetType="Button" BasedOn="{StaticResource RoundedButton}">
+      <Setter Property="Width" Value="88" />
+      <Setter Property="Height" Value="38" />
+      <Setter Property="Padding" Value="6,4" />
+      <Setter Property="Background" Value="#1c222c" />
+      <Setter Property="Foreground" Value="#f7f2e8" />
+      <Setter Property="BorderBrush" Value="#596171" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style x:Key="MetadataPill" TargetType="Border">
+      <Setter Property="Background" Value="#182235" />
+      <Setter Property="BorderBrush" Value="#2d3d58" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="14" />
+      <Setter Property="Margin" Value="0,0,12,12" />
+    </Style>
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+  </Window.Resources>
+
+  <Grid Margin="30">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,22">
+      <Image Source="pack://application:,,,/Assets/game-night-wordmark.png"
+             Width="342"
+             Height="76"
+             Stretch="Uniform"
+             HorizontalAlignment="Left"
+             RenderOptions.BitmapScalingMode="HighQuality" />
+      <Button DockPanel.Dock="Right"
+              Content="Open Dolphin"
+              Command="{Binding OpenEmulatorCommand}"
+              Style="{StaticResource HeaderButton}"
+              Visibility="{Binding IsSettingsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Margin="10,21,0,21" />
+      <StackPanel DockPanel.Dock="Right"
+                  Orientation="Horizontal"
+                  Margin="18,21,0,21">
+        <Button Content="Library"
+                Command="{Binding ShowLibraryCommand}"
+                Style="{StaticResource HeaderButton}"
+                Margin="0,0,8,0" />
+        <Button Content="Settings"
+                Command="{Binding ShowSettingsCommand}"
+                Style="{StaticResource HeaderButton}" />
+      </StackPanel>
+    </DockPanel>
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="260" />
+        <ColumnDefinition Width="24" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0"
+              Background="{StaticResource AppPanelBrush}"
+              BorderBrush="{StaticResource AppBorderBrush}"
+              BorderThickness="1"
+              CornerRadius="14"
+              Visibility="{Binding IsLibrarySelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Top"
+                     Text="Library"
+                     Foreground="{StaticResource AppTextBrush}"
+                     FontWeight="SemiBold"
+                     FontSize="16"
+                     Margin="18,16,18,10" />
+          <ListBox ItemsSource="{Binding Games}"
+                   SelectedItem="{Binding SelectedGame}"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   Foreground="{StaticResource AppTextBrush}"
+                   HorizontalContentAlignment="Stretch">
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="Margin" Value="10,0,10,8" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                      <Border x:Name="ItemBorder"
+                              Background="#0b1019"
+                              BorderBrush="#223047"
+                              BorderThickness="1"
+                              CornerRadius="8"
+                              Padding="6">
+                        <ContentPresenter />
+                      </Border>
+                      <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                          <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#18c8f8" />
+                          <Setter TargetName="ItemBorder" Property="Background" Value="#172236" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                          <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#9e42ff" />
+                          <Setter TargetName="ItemBorder" Property="Background" Value="#1a2440" />
+                        </Trigger>
+                      </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid Height="48">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="28" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Image Grid.Column="0"
+                         Source="{Binding PlatformIconSource}"
+                         Width="22"
+                         Height="22"
+                         Stretch="Uniform"
+                         RenderOptions.BitmapScalingMode="HighQuality"
+                         VerticalAlignment="Center" />
+                  <Border Grid.Column="1"
+                          Background="#05070c"
+                          BorderBrush="#2a3344"
+                          BorderThickness="1"
+                          CornerRadius="4"
+                          ClipToBounds="True">
+                    <Grid>
+                      <Image Source="{Binding BannerSource}"
+                             Stretch="Uniform"
+                             RenderOptions.BitmapScalingMode="HighQuality"
+                             Visibility="Collapsed">
+                        <Image.Style>
+                          <Style TargetType="Image">
+                            <Style.Triggers>
+                              <DataTrigger Binding="{Binding HasBannerArt}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                              </DataTrigger>
+                            </Style.Triggers>
+                          </Style>
+                        </Image.Style>
+                      </Image>
+                      <TextBlock Text="{Binding Name}"
+                                 Foreground="#f5f8ff"
+                                 FontWeight="SemiBold"
+                                 FontSize="13"
+                                 TextWrapping="NoWrap"
+                                 TextTrimming="CharacterEllipsis"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Margin="10,0">
+                        <TextBlock.Style>
+                          <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                              <DataTrigger Binding="{Binding HasBannerArt}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                              </DataTrigger>
+                            </Style.Triggers>
+                          </Style>
+                        </TextBlock.Style>
+                        <TextBlock.Effect>
+                          <DropShadowEffect Color="#000000"
+                                            ShadowDepth="1"
+                                            BlurRadius="3"
+                                            Opacity="0.9" />
+                        </TextBlock.Effect>
+                      </TextBlock>
+                    </Grid>
+                  </Border>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+      </Border>
+
+      <Border Grid.Column="2"
+              Background="{StaticResource AppPanelBrush}"
+              BorderBrush="{StaticResource AppBorderBrush}"
+              BorderThickness="1"
+              CornerRadius="14"
+              Padding="28"
+              Visibility="{Binding IsLibrarySelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <Border Grid.Row="0"
+                  Background="{Binding ReadinessBrush}"
+                  CornerRadius="12"
+                  Padding="14"
+                  Margin="0,0,0,20"
+                  Visibility="{Binding IsReadinessVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0"
+                         Text="{Binding ReadinessTitle}"
+                         Foreground="#ffffff"
+                         FontWeight="Bold"
+                         FontSize="15"
+                         Margin="0,0,18,0"
+                         VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1"
+                         Text="{Binding ReadinessDetail}"
+                         Foreground="#f4f4f4"
+                         FontSize="13"
+                         TextWrapping="Wrap"
+                         VerticalAlignment="Center" />
+            </Grid>
+          </Border>
+
+          <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="138" />
+              <ColumnDefinition Width="18" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0"
+                    Width="138"
+                    Height="190"
+                    Background="#070b12"
+                    BorderBrush="#263348"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    ClipToBounds="True">
+              <Image Source="{Binding SelectedGame.CoverSource}"
+                     Stretch="UniformToFill"
+                     RenderOptions.BitmapScalingMode="HighQuality" />
+            </Border>
+            <StackPanel Grid.Column="2" Margin="0,0,18,0" VerticalAlignment="Center">
+              <TextBlock Text="{Binding SelectedGame.Name}"
+                         Foreground="{StaticResource AppTextBrush}"
+                         FontSize="32"
+                         FontWeight="Black"
+                         TextWrapping="Wrap" />
+              <TextBlock Text="{Binding SelectedGame.Description}"
+                         Foreground="{StaticResource AppMutedBrush}"
+                         FontSize="14"
+                         Margin="0,6,0,0" />
+            </StackPanel>
+            <StackPanel Grid.Column="3"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Top">
+              <Button Content="Locate Game"
+                      Command="{Binding LocateGameCommand}"
+                      MinWidth="112"
+                      Margin="0,0,10,0" />
+              <Button Content="Play"
+                      Command="{Binding PlayCommand}"
+                      IsEnabled="{Binding CanPlay}"
+                      Style="{StaticResource PrimaryButton}"
+                      MinWidth="92" />
+            </StackPanel>
+          </Grid>
+
+          <ScrollViewer Grid.Row="2"
+                        Margin="0,26,0,16"
+                        VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+              <TextBlock Text="Game Metadata"
+                         Foreground="{StaticResource AppTextBrush}"
+                         FontWeight="SemiBold"
+                         FontSize="18"
+                         Margin="0,0,0,14" />
+
+              <UniformGrid Columns="3">
+                <Border Style="{StaticResource MetadataPill}">
+                  <StackPanel>
+                    <TextBlock Text="System" Foreground="{StaticResource AppMutedBrush}" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedGame.System}" Foreground="{StaticResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,5,0,0" />
+                  </StackPanel>
+                </Border>
+                <Border Style="{StaticResource MetadataPill}">
+                  <StackPanel>
+                    <TextBlock Text="Emulator" Foreground="{StaticResource AppMutedBrush}" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedGame.EmulatorName}" Foreground="{StaticResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,5,0,0" />
+                  </StackPanel>
+                </Border>
+                <Border Style="{StaticResource MetadataPill}">
+                  <StackPanel>
+                    <TextBlock Text="Library Source" Foreground="{StaticResource AppMutedBrush}" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedGame.LibraryBadge}" Foreground="{StaticResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,5,0,0" />
+                  </StackPanel>
+                </Border>
+                <Border Style="{StaticResource MetadataPill}">
+                  <StackPanel>
+                    <TextBlock Text="Format" Foreground="{StaticResource AppMutedBrush}" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedGame.FileFormat}" Foreground="{StaticResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,5,0,0" />
+                  </StackPanel>
+                </Border>
+                <Border Style="{StaticResource MetadataPill}">
+                  <StackPanel>
+                    <TextBlock Text="Size" Foreground="{StaticResource AppMutedBrush}" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedGame.FileSize}" Foreground="{StaticResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,5,0,0" />
+                  </StackPanel>
+                </Border>
+                <Border Style="{StaticResource MetadataPill}">
+                  <StackPanel>
+                    <TextBlock Text="File Status" Foreground="{StaticResource AppMutedBrush}" FontSize="12" />
+                    <TextBlock Text="{Binding SelectedGame.FileStatus}" Foreground="{StaticResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,5,0,0" />
+                  </StackPanel>
+                </Border>
+              </UniformGrid>
+
+              <Border Background="#0d131f"
+                      BorderBrush="#263348"
+                      BorderThickness="1"
+                      CornerRadius="12"
+                      Padding="18"
+                      Margin="0,12,0,0">
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="160" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+
+                  <TextBlock Grid.Row="0" Grid.Column="0" Text="File" Foreground="{StaticResource AppMutedBrush}" Margin="0,0,18,10" />
+                  <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedGame.FileName}" Foreground="{StaticResource AppTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                  <TextBlock Grid.Row="1" Grid.Column="0" Text="Path" Foreground="{StaticResource AppMutedBrush}" Margin="0,0,18,10" />
+                  <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedGame.RelativePath}" Foreground="{StaticResource AppTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                  <TextBlock Grid.Row="2" Grid.Column="0" Text="Verification" Foreground="{StaticResource AppMutedBrush}" Margin="0,0,18,10" />
+                  <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedGame.VerificationSummary}" Foreground="{StaticResource AppTextBrush}" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                  <TextBlock Grid.Row="3" Grid.Column="0" Text="Compatibility" Foreground="{StaticResource AppMutedBrush}" Margin="0,0,18,0" />
+                  <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedGame.CompatibilitySummary}" Foreground="{StaticResource AppTextBrush}" TextWrapping="Wrap" />
+                </Grid>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+
+          <DockPanel Grid.Row="3" Margin="0,10,0,0">
+            <TextBlock Text="{Binding SelectedGame.HashSummary}"
+                       DockPanel.Dock="Left"
+                       Foreground="{StaticResource AppMutedBrush}"
+                       FontSize="12"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+            <TextBlock
+                     Text="{Binding Message}"
+                     Foreground="#c8d4e8"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center" />
+          </DockPanel>
+        </Grid>
+      </Border>
+
+      <Border Grid.ColumnSpan="3"
+              Background="{StaticResource AppPanelBrush}"
+              BorderBrush="{StaticResource AppBorderBrush}"
+              BorderThickness="1"
+              CornerRadius="14"
+              Padding="24"
+              Visibility="{Binding IsSettingsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto">
+          <StackPanel>
+            <TextBlock Text="Settings"
+                       Foreground="{StaticResource AppTextBrush}"
+                       FontSize="28"
+                       FontWeight="Bold" />
+            <TextBlock Text="Player settings apply globally across the Game Night library."
+                       Foreground="{StaticResource AppMutedBrush}"
+                       FontSize="14"
+                       Margin="0,6,0,24" />
+
+            <TabControl Background="{StaticResource AppPanelBrush}"
+                        BorderBrush="{StaticResource AppBorderBrush}"
+                        Foreground="{StaticResource AppTextBrush}">
+              <TabItem Header="Netplay">
+                <Border BorderBrush="#303642"
+                        BorderThickness="1"
+                        Background="#12151b"
+                        Padding="14">
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="16" />
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="16" />
+                      <ColumnDefinition Width="120" />
+                      <ColumnDefinition Width="Auto" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                      <TextBlock Text="Nickname"
+                                 Foreground="#9297a1"
+                                 FontSize="12"
+                                 Margin="0,0,0,5" />
+                      <TextBox Text="{Binding NetplayNickname, UpdateSourceTrigger=PropertyChanged}"
+                               Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                      <TextBlock Text="Mode"
+                                 Foreground="#9297a1"
+                                 FontSize="12"
+                                 Margin="0,0,0,5" />
+                      <ComboBox ItemsSource="{Binding NetplayModes}"
+                                SelectedItem="{Binding NetplayMode}"
+                                Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="4">
+                      <TextBlock Text="Port"
+                                 Foreground="#9297a1"
+                                 FontSize="12"
+                                 Margin="0,0,0,5" />
+                      <TextBox Text="{Binding NetplayPort, UpdateSourceTrigger=PropertyChanged}"
+                               Padding="8,6" />
+                    </StackPanel>
+                    <Button Grid.Column="5"
+                            Content="Save"
+                            Command="{Binding SaveNetplayCommand}"
+                            Padding="14,8"
+                            Margin="16,17,0,0"
+                            VerticalAlignment="Top" />
+                    <Button Grid.Column="6"
+                            Content="Netplay Lobby"
+                            Command="{Binding OpenNetplayLobbyCommand}"
+                            Padding="14,8"
+                            Margin="10,17,0,0"
+                            VerticalAlignment="Top" />
+                  </Grid>
+                </Border>
+              </TabItem>
+
+              <TabItem Header="Graphics">
+                <Border BorderBrush="#303642"
+                        BorderThickness="1"
+                        Background="#12151b"
+                        Padding="14">
+                  <StackPanel>
+                    <TextBlock Text="Basic"
+                               Foreground="#f7f2e8"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10" />
+                    <Grid Margin="0,0,0,22">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="360" />
+                        <ColumnDefinition Width="24" />
+                        <ColumnDefinition Width="180" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                      </Grid.RowDefinitions>
+
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Backend:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding GraphicsBackends}" SelectedItem="{Binding GraphicsSettings.Backend}" Padding="8,5" Margin="0,0,0,8" />
+
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="Adapter:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding GraphicsAdapters}" Text="{Binding GraphicsSettings.Adapter, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" Padding="8,5" Margin="0,0,0,8" />
+
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="Aspect Ratio:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding GraphicsAspectRatios}" SelectedItem="{Binding GraphicsSettings.AspectRatio}" Padding="8,5" Margin="0,0,0,8" />
+
+                      <CheckBox Grid.Row="3" Grid.Column="0" Content="V-Sync" IsChecked="{Binding GraphicsSettings.VSync}" Foreground="#f7f2e8" Margin="0,4,0,0" />
+                      <CheckBox Grid.Row="3" Grid.Column="1" Content="Start in Fullscreen" IsChecked="{Binding GraphicsSettings.StartFullscreen}" Foreground="#f7f2e8" Margin="0,4,0,0" />
+                    </Grid>
+
+                    <TextBlock Text="Enhancements"
+                               Foreground="#f7f2e8"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,10" />
+                    <Grid>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="360" />
+                        <ColumnDefinition Width="24" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                      </Grid.RowDefinitions>
+
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Internal Resolution:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding InternalResolutions}" SelectedItem="{Binding GraphicsSettings.InternalResolution}" Padding="8,5" Margin="0,0,0,8" />
+
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="Anti-Aliasing:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AntiAliasingModes}" SelectedItem="{Binding GraphicsSettings.AntiAliasing}" Padding="8,5" Margin="0,0,0,8" />
+
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="Texture Filtering:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding TextureFilteringModes}" SelectedItem="{Binding GraphicsSettings.TextureFiltering}" Padding="8,5" Margin="0,0,0,8" />
+
+                      <TextBlock Grid.Row="3" Grid.Column="0" Text="Output Resampling:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding OutputResamplingModes}" SelectedItem="{Binding GraphicsSettings.OutputResampling}" Padding="8,5" Margin="0,0,0,8" />
+
+                      <TextBlock Grid.Row="4" Grid.Column="0" Text="Color Correction:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <CheckBox Grid.Row="4" Grid.Column="1" Content="Enabled" IsChecked="{Binding GraphicsSettings.ColorCorrection}" Foreground="#f7f2e8" Margin="0,5,0,8" />
+
+                      <TextBlock Grid.Row="5" Grid.Column="0" Text="Post-Processing Effect:" Foreground="#f7f2e8" Margin="0,5,12,8" />
+                      <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding PostProcessingEffects}" SelectedItem="{Binding GraphicsSettings.PostProcessingEffect}" Padding="8,5" Margin="0,0,0,8" />
+
+                      <Button Grid.Row="6"
+                              Grid.Column="1"
+                              Content="Save Graphics"
+                              Command="{Binding SaveGraphicsCommand}"
+                              Padding="14,8"
+                              HorizontalAlignment="Right"
+                              Margin="0,8,0,0" />
+                    </Grid>
+                  </StackPanel>
+                </Border>
+              </TabItem>
+
+              <TabItem Header="Controller">
+                <Border BorderBrush="#303642"
+                        BorderThickness="1"
+                        Background="#12151b"
+                        Padding="14">
+                  <StackPanel>
+                    <Grid>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                      </Grid.ColumnDefinitions>
+                      <StackPanel Grid.Column="0">
+                        <TextBlock Text="Detected Controller"
+                                   Foreground="#9297a1"
+                                   FontSize="12"
+                                   Margin="0,0,0,5" />
+                        <ComboBox ItemsSource="{Binding ConnectedControllers}"
+                                  SelectedItem="{Binding SelectedControllerName}"
+                                  Padding="8,6" />
+                      </StackPanel>
+                      <Button Grid.Column="1"
+                              Content="Apply Profile"
+                              Command="{Binding ApplyControllerProfileCommand}"
+                              Padding="14,8"
+                              Margin="16,17,0,0"
+                              VerticalAlignment="Top" />
+                    </Grid>
+
+                    <Grid Margin="0,18,0,12">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="260" />
+                      </Grid.ColumnDefinitions>
+
+                      <Border Grid.Column="0"
+                              BorderBrush="#303642"
+                              BorderThickness="1"
+                              Background="#0d1016"
+                              CornerRadius="6"
+                              Padding="8">
+                          <Canvas Width="760"
+                                  Height="430"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center">
+                            <Image Source="pack://application:,,,/Assets/gamecube-controller.png"
+                                   Width="760"
+                                   Height="430"
+                                   Stretch="UniformToFill"
+                                   Opacity="0.58" />
+
+                            <Button Canvas.Left="104" Canvas.Top="18" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="L">
+                              <StackPanel>
+                                <TextBlock Text="L" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.L}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="536" Canvas.Top="18" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="R">
+                              <StackPanel>
+                                <TextBlock Text="R" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.R}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="228" Canvas.Top="18" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="LAnalog">
+                              <StackPanel>
+                                <TextBlock Text="L Analog" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.LAnalog}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="412" Canvas.Top="18" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="RAnalog">
+                              <StackPanel>
+                                <TextBlock Text="R Analog" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.RAnalog}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="321" Canvas.Top="168" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="Start">
+                              <StackPanel>
+                                <TextBlock Text="Start" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.Start}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+
+                            <Button Canvas.Left="87" Canvas.Top="96" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="MainUp">
+                              <StackPanel>
+                                <TextBlock Text="L-Stick Up" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.MainUp}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="87" Canvas.Top="228" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="MainDown">
+                              <StackPanel>
+                                <TextBlock Text="L-Stick Down" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.MainDown}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="16" Canvas.Top="162" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="MainLeft">
+                              <StackPanel>
+                                <TextBlock Text="L-Stick Left" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.MainLeft}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="158" Canvas.Top="162" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="MainRight">
+                              <StackPanel>
+                                <TextBlock Text="L-Stick Right" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.MainRight}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+
+                            <Button Canvas.Left="206" Canvas.Top="244" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="DPadUp">
+                              <StackPanel>
+                                <TextBlock Text="D-Pad Up" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.DPadUp}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="206" Canvas.Top="358" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="DPadDown">
+                              <StackPanel>
+                                <TextBlock Text="D-Pad Down" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.DPadDown}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="134" Canvas.Top="302" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="DPadLeft">
+                              <StackPanel>
+                                <TextBlock Text="D-Pad Left" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.DPadLeft}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="278" Canvas.Top="302" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="DPadRight">
+                              <StackPanel>
+                                <TextBlock Text="D-Pad Right" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.DPadRight}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+
+                            <Button Canvas.Left="603" Canvas.Top="134" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="A">
+                              <StackPanel>
+                                <TextBlock Text="A" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.A}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="513" Canvas.Top="184" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="B">
+                              <StackPanel>
+                                <TextBlock Text="B" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.B}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="558" Canvas.Top="82" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="X">
+                              <StackPanel>
+                                <TextBlock Text="X" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.X}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="650" Canvas.Top="82" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="Y">
+                              <StackPanel>
+                                <TextBlock Text="Y" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.Y}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="642" Canvas.Top="198" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="Z">
+                              <StackPanel>
+                                <TextBlock Text="Z" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.Z}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+
+                            <Button Canvas.Left="468" Canvas.Top="238" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="CUp">
+                              <StackPanel>
+                                <TextBlock Text="C Up" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.CUp}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="468" Canvas.Top="358" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="CDown">
+                              <StackPanel>
+                                <TextBlock Text="C Down" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.CDown}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="395" Canvas.Top="298" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="CLeft">
+                              <StackPanel>
+                                <TextBlock Text="C Left" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.CLeft}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                            <Button Canvas.Left="541" Canvas.Top="298" Style="{StaticResource MappingCaptureButton}" Command="{Binding CaptureControllerButtonCommand}" CommandParameter="CRight">
+                              <StackPanel>
+                                <TextBlock Text="C Right" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding ControllerMapping.CRight}" FontSize="9" Foreground="#c9ced8" TextTrimming="CharacterEllipsis" />
+                              </StackPanel>
+                            </Button>
+                          </Canvas>
+                      </Border>
+
+                      <StackPanel Grid.Column="2">
+                        <TextBlock Text="Device"
+                                   Foreground="#9297a1"
+                                   FontSize="12"
+                                   Margin="0,0,0,5" />
+                        <TextBox Text="{Binding ControllerMapping.Device, UpdateSourceTrigger=PropertyChanged}"
+                                 Padding="8,6"
+                                 Margin="0,0,0,14" />
+                        <TextBlock Text="Click a mapping value, then press or move the matching controller input."
+                                   Foreground="#9297a1"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,8" />
+                        <TextBlock Text="L and R are digital trigger presses. L Analog and R Analog are the trigger axis mappings used by pressure-sensitive games."
+                                   Foreground="#9297a1"
+                                   FontSize="12"
+                                   TextWrapping="Wrap" />
+                      </StackPanel>
+                    </Grid>
+
+                    <DockPanel>
+                      <Button DockPanel.Dock="Right"
+                              Content="Save Mappings"
+                              Command="{Binding SaveControllerMappingsCommand}"
+                              Padding="14,8" />
+                      <TextBlock Text="Mapping values are saved using Dolphin's native binding syntax."
+                                 Foreground="#9297a1"
+                                 FontSize="12" />
+                    </DockPanel>
+                  </StackPanel>
+                </Border>
+              </TabItem>
+
+              <TabItem Header="About">
+                <Border BorderBrush="#303642"
+                        BorderThickness="1"
+                        Background="#12151b"
+                        Padding="18">
+                  <StackPanel MaxWidth="760"
+                              HorizontalAlignment="Left">
+                    <TextBlock Text="Game Night"
+                               Foreground="#f7f2e8"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Margin="0,0,0,4" />
+                    <TextBlock Text="{Binding UpdateStatus}"
+                               Foreground="#9297a1"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,20" />
+
+                    <Grid Margin="0,0,0,22">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                      </Grid.RowDefinitions>
+
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Installed Version" Foreground="#9297a1" Margin="0,0,18,10" />
+                      <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AppVersion}" Foreground="#f7f2e8" FontWeight="SemiBold" Margin="0,0,0,10" />
+
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="Channel" Foreground="#9297a1" Margin="0,0,18,10" />
+                      <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AppChannel}" Foreground="#f7f2e8" Margin="0,0,0,10" />
+
+                      <TextBlock Grid.Row="2" Grid.Column="0" Text="Package Date" Foreground="#9297a1" Margin="0,0,18,10" />
+                      <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding PackageDate}" Foreground="#f7f2e8" Margin="0,0,0,10" />
+
+                      <TextBlock Grid.Row="3" Grid.Column="0" Text="Update Feed" Foreground="#9297a1" Margin="0,0,18,10" />
+                      <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding UpdateFeedUrl}" Foreground="#f7f2e8" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+                      <TextBlock Grid.Row="4" Grid.Column="0" Text="Package Root" Foreground="#9297a1" Margin="0,0,18,0" />
+                      <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ProjectRoot}" Foreground="#f7f2e8" TextWrapping="Wrap" />
+                    </Grid>
+
+                    <DockPanel Margin="0,0,0,12">
+                      <Button DockPanel.Dock="Left"
+                              Content="Check for Updates"
+                              Command="{Binding CheckForUpdatesCommand}"
+                              Padding="14,8"
+                              Margin="0,0,10,0" />
+                      <Button DockPanel.Dock="Left"
+                              Content="Open Download"
+                              Command="{Binding OpenUpdatePackageCommand}"
+                              Padding="14,8"
+                              Margin="0,0,10,0" />
+                      <TextBlock Text="{Binding UpdateCheckStatus}"
+                                 Foreground="#c9ced8"
+                                 FontSize="13"
+                                 TextWrapping="Wrap"
+                                 VerticalAlignment="Center" />
+                    </DockPanel>
+
+                    <Grid Margin="0,0,0,22">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                      </Grid.RowDefinitions>
+
+                      <TextBlock Grid.Row="0" Grid.Column="0" Text="Latest Version" Foreground="#9297a1" Margin="0,0,18,10" />
+                      <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LatestVersion}" Foreground="#f7f2e8" FontWeight="SemiBold" Margin="0,0,0,10" />
+
+                      <TextBlock Grid.Row="1" Grid.Column="0" Text="Download" Foreground="#9297a1" Margin="0,0,18,0" />
+                      <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding UpdatePackageUrl}" Foreground="#f7f2e8" TextWrapping="Wrap" />
+                    </Grid>
+
+                    <TextBlock Text="Release Notes"
+                               Foreground="#f7f2e8"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,8" />
+                    <Border BorderBrush="#303642"
+                            BorderThickness="1"
+                            Background="#0d1016"
+                            CornerRadius="6"
+                            Padding="12">
+                      <TextBlock Text="{Binding ReleaseNotesText}"
+                                 Foreground="#c9ced8"
+                                 TextWrapping="Wrap" />
+                    </Border>
+
+                    <TextBlock Text="Remote Release Notes"
+                               Foreground="#f7f2e8"
+                               FontWeight="SemiBold"
+                               Margin="0,18,0,8" />
+                    <Border BorderBrush="#303642"
+                            BorderThickness="1"
+                            Background="#0d1016"
+                            CornerRadius="6"
+                            Padding="12">
+                      <TextBlock Text="{Binding UpdateReleaseNotesText}"
+                                 Foreground="#c9ced8"
+                                 TextWrapping="Wrap" />
+                    </Border>
+                  </StackPanel>
+                </Border>
+              </TabItem>
+            </TabControl>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+
+    <TextBlock Grid.Row="2"
+               Text="Local game files stay on this PC. Curated games are hash-verified before launch."
+               Foreground="#6f7580"
+               FontSize="12"
+               Margin="0,18,0,0" />
+  </Grid>
+</Window>

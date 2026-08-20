@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "gameId": "mario-party-5-usa",
+  "emulator": "dolphin",
+  "notes": [
+    "Use the same Dolphin build and the same verified game hash across all players.",
+    "Keep controller mappings and graphics preferences local per player.",
+    "Use direct connection as the tested path for this setup; revisit traversal when testing with remote players."
+  ],
+  "requiredControllerType": "gamecube",
+  "recommendedNetplay": {
+    "mode": "direct",
+    "directConnectPort": 2626
+  }
+}

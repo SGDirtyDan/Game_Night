@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "games": [
+    {
+      "id": "example-gc",
+      "name": "Example GameCube Game",
+      "system": "GameCube",
+      "emulator": "dolphin",
+      "relativePath": "games/Example Game.iso",
+      "sha256": "replace-with-expected-sha256",
+      "compatibilityProfile": "shared/compatibility/example-gc.json",
+      "gameTdbId": "GMPE01"
+    },
+    {
+      "id": "example-n64",
+      "name": "Example N64 Game",
+      "system": "Nintendo 64",
+      "emulator": "retroarch",
+      "core": "parallel_n64",
+      "relativePath": "games/Example Game.z64",
+      "sha256": "replace-with-expected-sha256",
+      "compatibilityProfile": "shared/compatibility/example-n64.json"
+    }
+  ]
+}

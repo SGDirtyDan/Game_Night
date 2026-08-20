@@ -1,0 +1,25 @@
+# Local game files should not be committed or synchronized through git.
+games/*
+!games/.gitkeep
+
+# Portable emulator binaries/configs can be large and machine-specific while iterating.
+emulators/dolphin/*
+!emulators/dolphin/.gitkeep
+emulators/retroarch/*
+!emulators/retroarch/.gitkeep
+
+# Local player configuration.
+user/controllers/*
+!user/controllers/.gitkeep
+user/hardware/*
+!user/hardware/.gitkeep
+
+# Local filled-in config may contain private hostnames or hashes.
+config/games.json
+
+# Common build artifacts.
+bin/
+obj/
+dist/
+.vs/
+.vscode/
