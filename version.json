@@ -1,11 +1,11 @@
 {
-  "version": "0.3.12",
+  "version": "0.3.13",
   "channel": "local",
   "packageDate": "2026-08-20",
   "updateFeedUrl": "https://raw.githubusercontent.com/SGDirtyDan/Game_Night/main/update.json",
   "releaseNotes": [
-    "Placebo update to verify the new in-app installer flow.",
-    "No gameplay, controller, NetPlay, graphics, or library behavior changed.",
-    "Confirms that version 0.3.11 can install an update and relaunch Game Night."
+    "Run the updater from a temporary folder instead of the package being replaced.",
+    "Write updater diagnostics to the local Game Night log folder.",
+    "Improve update failure visibility for installer testing."
   ]
 }

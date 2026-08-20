@@ -199,16 +199,30 @@ public sealed class GameNightService
         }
 
         var relaunchPath = Path.Combine(ProjectRoot, "app", "GameNight.exe");
+        var updaterLaunchDirectory = Path.Combine(Path.GetTempPath(), "GameNightUpdater-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(updaterLaunchDirectory);
+
+        var tempUpdaterPath = Path.Combine(updaterLaunchDirectory, "Update-GameNight.ps1");
+        File.Copy(updaterPath, tempUpdaterPath, overwrite: true);
+
+        var logDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "GameNight",
+            "Logs");
+        Directory.CreateDirectory(logDirectory);
+        var logPath = Path.Combine(logDirectory, "last-update.log");
+
         var processId = Environment.ProcessId;
         var arguments = string.Join(
             " ",
             "-NoProfile",
             "-ExecutionPolicy Bypass",
-            "-File " + QuotePowerShellArgument(updaterPath),
+            "-File " + QuotePowerShellArgument(tempUpdaterPath),
             "-PackageRoot " + QuotePowerShellArgument(ProjectRoot),
             "-ZipPath " + QuotePowerShellArgument(zipPath),
             "-AppProcessId " + processId,
-            "-RelaunchPath " + QuotePowerShellArgument(relaunchPath));
+            "-RelaunchPath " + QuotePowerShellArgument(relaunchPath),
+            "-LogPath " + QuotePowerShellArgument(logPath));
 
         Process.Start(new ProcessStartInfo
         {
@@ -216,10 +230,10 @@ public sealed class GameNightService
             Arguments = arguments,
             UseShellExecute = false,
             CreateNoWindow = false,
-            WorkingDirectory = ProjectRoot
+            WorkingDirectory = updaterLaunchDirectory
         });
 
-        return new UpdateInstallResult(true, $"Downloaded and verified {feed.LatestVersion}. Game Night will close while the updater replaces files.");
+        return new UpdateInstallResult(true, $"Downloaded and verified {feed.LatestVersion}. Game Night will close while the updater replaces files. Updater log: {logPath}");
     }
 
     public static void OpenExternalUrl(string url)
