@@ -39,17 +39,23 @@ if (-not (Test-Path -LiteralPath $feedPath)) {
 }
 
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $notesPath) | Out-Null
-@(
+
+$releaseNoteLines = @($versionInfo.releaseNotes | ForEach-Object { "- $_" })
+$notesLines = @(
     "# Game Night $version",
     "",
     "## Release Notes",
-    "",
-    $versionInfo.releaseNotes | ForEach-Object { "- $_" },
+    ""
+)
+$notesLines += $releaseNoteLines
+$notesLines += @(
     "",
     "## Update Feed",
     "",
     "The update feed is tracked at ``update.json`` and should be pushed to ``main`` after this release is prepared."
-) | Set-Content -LiteralPath $notesPath -Encoding UTF8
+)
+
+$notesLines | Set-Content -LiteralPath $notesPath -Encoding UTF8
 
 $args = @(
     "release",
