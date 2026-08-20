@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -682,13 +683,33 @@ public sealed class MainViewModel : INotifyPropertyChanged
             return;
         }
 
-        UpdateCheckStatus = "Downloading update...";
-        var result = await _service.DownloadAndInstallUpdateAsync(_latestUpdateFeed);
-        UpdateCheckStatus = result.Message;
-
-        if (result.Success)
+        try
         {
-            Application.Current.Shutdown();
+            UpdateCheckStatus = "Downloading update...";
+            var progress = new Progress<string>(message => UpdateCheckStatus = message);
+            var result = await _service.DownloadAndInstallUpdateAsync(_latestUpdateFeed, progress);
+            UpdateCheckStatus = result.Message;
+
+            if (result.Success)
+            {
+                Application.Current.Shutdown();
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            UpdateCheckStatus = "Update download failed: " + ex.Message;
+        }
+        catch (TaskCanceledException)
+        {
+            UpdateCheckStatus = "Update download timed out. Check your connection and try again.";
+        }
+        catch (IOException ex)
+        {
+            UpdateCheckStatus = "Update install could not write files: " + ex.Message;
+        }
+        catch (InvalidOperationException ex)
+        {
+            UpdateCheckStatus = "Update install failed: " + ex.Message;
         }
     }
 

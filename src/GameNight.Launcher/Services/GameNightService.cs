@@ -20,6 +20,11 @@ public sealed class GameNightService
         Timeout = TimeSpan.FromSeconds(8)
     };
 
+    private static readonly HttpClient UpdateHttpClient = new()
+    {
+        Timeout = TimeSpan.FromMinutes(15)
+    };
+
     private static readonly IReadOnlyDictionary<string, DiscoveredGameType> GameTypesByExtension =
         new Dictionary<string, DiscoveredGameType>(StringComparer.OrdinalIgnoreCase)
         {
@@ -153,7 +158,7 @@ public sealed class GameNightService
         }
     }
 
-    public async Task<UpdateInstallResult> DownloadAndInstallUpdateAsync(UpdateFeedInfo feed)
+    public async Task<UpdateInstallResult> DownloadAndInstallUpdateAsync(UpdateFeedInfo feed, IProgress<string>? progress = null)
     {
         if (string.IsNullOrWhiteSpace(feed.PackageUrl))
         {
@@ -181,14 +186,47 @@ public sealed class GameNightService
         }
 
         var zipPath = Path.Combine(updatesDirectory, zipFileName);
-        using (var response = await ArtworkHttpClient.GetAsync(feed.PackageUrl))
+        progress?.Report("Connecting to update download...");
+        using (var response = await UpdateHttpClient.GetAsync(feed.PackageUrl, HttpCompletionOption.ResponseHeadersRead))
         {
             response.EnsureSuccessStatusCode();
+            var totalBytes = response.Content.Headers.ContentLength;
             await using var source = await response.Content.ReadAsStreamAsync();
             await using var target = File.Create(zipPath);
-            await source.CopyToAsync(target);
+            var buffer = new byte[1024 * 128];
+            long downloadedBytes = 0;
+            var lastProgressReport = DateTimeOffset.MinValue;
+
+            while (true)
+            {
+                var bytesRead = await source.ReadAsync(buffer);
+                if (bytesRead == 0)
+                {
+                    break;
+                }
+
+                await target.WriteAsync(buffer.AsMemory(0, bytesRead));
+                downloadedBytes += bytesRead;
+
+                if (DateTimeOffset.UtcNow - lastProgressReport < TimeSpan.FromMilliseconds(500))
+                {
+                    continue;
+                }
+
+                lastProgressReport = DateTimeOffset.UtcNow;
+                if (totalBytes is > 0)
+                {
+                    var percent = downloadedBytes * 100d / totalBytes.Value;
+                    progress?.Report($"Downloading update... {percent:0}% ({downloadedBytes / 1024d / 1024d:0.0} MB of {totalBytes.Value / 1024d / 1024d:0.0} MB)");
+                }
+                else
+                {
+                    progress?.Report($"Downloading update... {downloadedBytes / 1024d / 1024d:0.0} MB");
+                }
+            }
         }
 
+        progress?.Report("Verifying update download...");
         var actualHash = await ComputeSha256Async(zipPath);
         if (!string.Equals(actualHash, feed.Sha256, StringComparison.OrdinalIgnoreCase))
         {
@@ -198,6 +236,7 @@ public sealed class GameNightService
                 $"Downloaded update hash did not match. Expected {feed.Sha256}, found {actualHash}.");
         }
 
+        progress?.Report("Starting updater...");
         var relaunchPath = Path.Combine(ProjectRoot, "app", "GameNight.exe");
         var updaterLaunchDirectory = Path.Combine(Path.GetTempPath(), "GameNightUpdater-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(updaterLaunchDirectory);

@@ -1,11 +1,11 @@
 ﻿{
-    "latestVersion":  "0.3.14",
+    "latestVersion":  "0.3.15",
     "channel":  "friend",
-    "packageUrl":  "https://github.com/SGDirtyDan/Game_Night/releases/download/v0.3.14/GameNight-Friend-0.3.14.zip",
-    "sha256":  "DF6D1A189CD6D3EA0D004628B5E1742794E6362117ECEB542A43F1C390015AB8",
+    "packageUrl":  "https://github.com/SGDirtyDan/Game_Night/releases/download/v0.3.15/GameNight-Friend-0.3.15.zip",
+    "sha256":  "83270FE293B07A659BBF1C9F217C1B8B6FA3081B35588EF86F42ADB7120B50F8",
     "releaseNotes":  [
-                         "Placebo update to verify the hardened in-app updater.",
-                         "No gameplay, controller, NetPlay, graphics, or library behavior changed.",
-                         "Confirms that version 0.3.13 can install an update from the app and relaunch cleanly."
+                         "Add visible update download progress.",
+                         "Use a longer timeout for release zip downloads.",
+                         "Show update download and install errors in the About tab instead of failing silently."
                      ]
 }
